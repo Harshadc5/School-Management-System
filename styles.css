@@ -884,7 +884,7 @@ h2 {
 
 .certificate-body strong {
     color: #333;
-    text-decoration: underline;
+    font-weight: 700;
 }
 
 .certificate-footer {
