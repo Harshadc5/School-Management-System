@@ -1,0 +1,5 @@
+{
+  "rewrites": [
+    { "source": "/access", "destination": "/access.html" }
+  ]
+}

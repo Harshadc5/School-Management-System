@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Access Management</title>
+    <link href="https://fonts.googleapis.com/css?family=Poppins:400,600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="icon" href="data:,">
+    <style>
+        .access-wrap {
+            max-width: 720px;
+            margin: 60px auto;
+            padding: 0 20px;
+        }
+
+        .access-card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+            padding: 40px;
+            text-align: center;
+        }
+
+        .access-card h1 {
+            font-size: 1.6em;
+            margin-bottom: 10px;
+            color: #2C3E50;
+        }
+
+        .access-card p {
+            color: #666;
+            margin-bottom: 25px;
+        }
+
+        #accessStatus {
+            margin-top: 15px;
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-size: 0.95em;
+            display: none;
+        }
+
+        #accessStatus.error {
+            background: #FDECEA;
+            color: #B3261E;
+            display: block;
+        }
+
+        #accessStatus.success {
+            background: #E8F5E9;
+            color: #2E7D32;
+            display: block;
+        }
+
+        .access-panel {
+            display: none;
+        }
+
+        .access-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .access-header .signed-in-as {
+            font-size: 0.9em;
+            color: #666;
+        }
+
+        .add-user-form {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .add-user-form input[type="email"] {
+            flex: 1;
+            min-width: 200px;
+            padding: 12px 16px;
+            border: 2px solid #E0E0E0;
+            border-radius: 25px;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .add-user-form select {
+            padding: 12px 16px;
+            border: 2px solid #E0E0E0;
+            border-radius: 25px;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .user-list-section {
+            text-align: left;
+            margin-bottom: 25px;
+        }
+
+        .user-list-section h3 {
+            font-size: 1.1em;
+            color: #2C3E50;
+            margin-bottom: 12px;
+        }
+
+        .user-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 14px;
+            border: 1px solid #eee;
+            border-radius: 10px;
+            margin-bottom: 8px;
+        }
+
+        .user-row .user-email {
+            font-size: 0.95em;
+            color: #333;
+            word-break: break-all;
+        }
+
+        .user-row .btn-remove {
+            background: #FDECEA;
+            color: #B3261E;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 15px;
+            cursor: pointer;
+            font-size: 0.85em;
+            flex-shrink: 0;
+            margin-left: 10px;
+        }
+
+        .user-row .btn-remove:hover {
+            background: #B3261E;
+            color: white;
+        }
+
+        .empty-list-note {
+            color: #999;
+            font-size: 0.9em;
+            font-style: italic;
+            padding: 6px 2px;
+        }
+
+        .seed-note {
+            background: #FFF8E1;
+            color: #8A6D00;
+            padding: 14px 16px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            text-align: left;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="access-wrap">
+        <div class="access-card">
+            <h1><i class="fas fa-user-shield"></i> Access Management</h1>
+            <p>Manage who can sign in as Admin or Staff.</p>
+
+            <!-- Signed-out / denied state -->
+            <div id="loginPanel">
+                <button class="btn btn-primary" id="accessSignInBtn">
+                    <i class="fab fa-google"></i> Sign in with Google
+                </button>
+                <div id="accessStatus"></div>
+            </div>
+
+            <!-- Owner-only management panel -->
+            <div class="access-panel" id="managementPanel">
+                <div class="access-header">
+                    <span class="signed-in-as">Signed in as <strong id="ownerEmailDisplay"></strong></span>
+                    <button class="btn btn-secondary" id="accessSignOutBtn">Sign Out</button>
+                </div>
+
+                <div id="seedNotice" class="seed-note" style="display: none;">
+                    No access list found in the database yet. Click below to import the previous hardcoded
+                    admin/staff list as a starting point.
+                    <br><br>
+                    <button class="btn btn-primary" id="seedBtn">Import Existing List</button>
+                </div>
+
+                <div class="add-user-form">
+                    <input type="email" id="newUserEmail" placeholder="email@gmail.com">
+                    <select id="newUserRole">
+                        <option value="admin">Admin</option>
+                        <option value="staff">Staff</option>
+                    </select>
+                    <button class="btn btn-primary" id="addUserBtn"><i class="fas fa-plus"></i> Add</button>
+                </div>
+
+                <div class="user-list-section">
+                    <h3>Admins</h3>
+                    <div id="adminList"></div>
+                </div>
+
+                <div class="user-list-section">
+                    <h3>Staff</h3>
+                    <div id="staffList"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="access.js"></script>
+</body>
+
+</html>

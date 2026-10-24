@@ -1,10 +1,43 @@
 // Import Firebase modules
-import { database, ref, set, get, push, remove, update, child, auth, googleProvider, signInWithPopup, signInWithRedirect, getRedirectResult, signOut, onAuthStateChanged, ADMIN_EMAILS, STAFF_EMAILS } from './firebase-config.js';
+import { database, ref, set, get, push, remove, update, child, auth, googleProvider, signInWithPopup, signInWithRedirect, getRedirectResult, signOut, onAuthStateChanged, DEFAULT_ADMIN_EMAILS, DEFAULT_STAFF_EMAILS } from './firebase-config.js';
 
 // Authentication state
 let currentUser = null;
 let currentUserRole = null; // 'admin' or 'staff'
 let currentDocumentStudentId = null; // id of the student whose LC/Bonafide is open
+
+// Admin/Staff whitelist - loaded from the database (managed via access.html),
+// falling back to the old hardcoded lists only if the database node is empty
+let ADMIN_EMAILS = [];
+let STAFF_EMAILS = [];
+
+async function refreshAuthorizedUsers() {
+    try {
+        const snapshot = await get(ref(database, 'authorizedUsers'));
+        const admins = [];
+        const staff = [];
+        if (snapshot.exists()) {
+            Object.values(snapshot.val()).forEach(entry => {
+                if (!entry || !entry.email) return;
+                if (entry.role === 'admin') admins.push(entry.email);
+                else if (entry.role === 'staff') staff.push(entry.email);
+            });
+            ADMIN_EMAILS = admins;
+            STAFF_EMAILS = staff;
+        } else {
+            // First run / not migrated yet - fall back to the old hardcoded lists
+            ADMIN_EMAILS = DEFAULT_ADMIN_EMAILS;
+            STAFF_EMAILS = DEFAULT_STAFF_EMAILS;
+        }
+    } catch (error) {
+        console.error('Failed to load authorized users, falling back to defaults:', error);
+        ADMIN_EMAILS = DEFAULT_ADMIN_EMAILS;
+        STAFF_EMAILS = DEFAULT_STAFF_EMAILS;
+    }
+}
+
+// Must complete before any sign-in/role checks below run
+await refreshAuthorizedUsers();
 
 // Override native alert with beautiful custom toast
 window.alert = function (message) {
@@ -803,8 +836,8 @@ function generateCertificate(id) {
                         <div style="flex: 1; padding: 4px 8px;">२) आईचे नाव - <strong>${student.motherName}</strong></div>
                     </div>
                     <div style="display: flex; border-bottom: 1px solid #000;">
-                        <div style="flex: 1; padding: 4px 8px; border-right: 1px solid #000;">३) राष्ट्रीयत्व : भारतीय</div>
-                        <div style="flex: 1; padding: 4px 8px;">४) मातृभाषा : मराठी</div>
+                        <div style="flex: 1; padding: 4px 8px; border-right: 1px solid #000;">३) राष्ट्रीयत्व : <strong>भारतीय</strong></div>
+                        <div style="flex: 1; padding: 4px 8px;">४) मातृभाषा : <strong>मराठी</strong></div>
                     </div>
                     <div style="display: flex; border-bottom: 1px solid #000;">
                         <div style="flex: 1; padding: 4px 8px; border-right: 1px solid #000;">५) धर्म : <strong>${student.religion}</strong></div>
@@ -817,8 +850,8 @@ function generateCertificate(id) {
                         <div style="flex: 1; padding: 4px 8px;">जिल्हा : <strong>${student.birthDistrict}</strong></div>
                     </div>
                     <div style="display: flex; border-bottom: 1px solid #000;">
-                        <div style="flex: 1; padding: 4px 8px; border-right: 1px solid #000;">९) राज्य : महाराष्ट्र</div>
-                        <div style="flex: 1; padding: 4px 8px;">१०) देश : भारत</div>
+                        <div style="flex: 1; padding: 4px 8px; border-right: 1px solid #000;">९) राज्य : <strong>महाराष्ट्र</strong></div>
+                        <div style="flex: 1; padding: 4px 8px;">१०) देश : <strong>भारत</strong></div>
                     </div>
                     <div style="display: flex; border-bottom: 1px solid #000;">
                         <div style="flex: 1; padding: 4px 8px;">११) जन्म दिनांक अंकी - <strong>${formatDate(student.dob)}</strong></div>
