@@ -465,6 +465,13 @@
             <div class="search-box">
                 <input type="text" id="searchStudent" placeholder="Search by name or admission number..."
                     onkeyup="filterStudents()">
+                <div class="sort-box">
+                    <label for="sortStudents" class="sort-label">Sort by:</label>
+                    <select id="sortStudents" onchange="filterStudents()">
+                        <option value="recent">Recently Added First</option>
+                        <option value="first">First Added</option>
+                    </select>
+                </div>
                 <div class="bulk-action-bar">
                     <label class="select-all-label">
                         <input type="checkbox" id="selectAllCheckbox" onchange="toggleSelectAll()">

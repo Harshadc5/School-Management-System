@@ -215,23 +215,34 @@ function displayStudents() {
             return;
         }
 
-        // Sort students by registration number in ascending order
-        const sortedStudents = [...students].sort((a, b) => {
-            const regA = (a.registrationNo || '').toString();
-            const regB = (b.registrationNo || '').toString();
+        const sortMode = document.getElementById('sortStudents')?.value || 'recent';
 
-            // Try to parse as numbers first
-            const numA = parseInt(regA);
-            const numB = parseInt(regB);
+        let sortedStudents;
+        if (sortMode === 'recent' || sortMode === 'first') {
+            sortedStudents = [...students].sort((a, b) => {
+                const timeA = new Date(a.dateAdded || 0).getTime();
+                const timeB = new Date(b.dateAdded || 0).getTime();
+                return sortMode === 'recent' ? timeB - timeA : timeA - timeB;
+            });
+        } else {
+            // Sort students by registration number in ascending order
+            sortedStudents = [...students].sort((a, b) => {
+                const regA = (a.registrationNo || '').toString();
+                const regB = (b.registrationNo || '').toString();
 
-            // If both are valid numbers, compare numerically
-            if (!isNaN(numA) && !isNaN(numB)) {
-                return numA - numB;
-            }
+                // Try to parse as numbers first
+                const numA = parseInt(regA);
+                const numB = parseInt(regB);
 
-            // Otherwise, compare as strings
-            return regA.localeCompare(regB, undefined, { numeric: true, sensitivity: 'base' });
-        });
+                // If both are valid numbers, compare numerically
+                if (!isNaN(numA) && !isNaN(numB)) {
+                    return numA - numB;
+                }
+
+                // Otherwise, compare as strings
+                return regA.localeCompare(regB, undefined, { numeric: true, sensitivity: 'base' });
+            });
+        }
 
         studentsList.innerHTML = sortedStudents.map(student => `
         <div class="student-card" data-id="${student.id}">
@@ -554,6 +565,8 @@ window.deleteSelectedStudents = async function () {
 
 // Search/Filter students
 function filterStudents() {
+    displayStudents(); // re-render in the currently selected sort order
+
     const searchTerm = document.getElementById('searchStudent').value.toLowerCase();
     const studentCards = document.querySelectorAll('.student-card');
 
@@ -599,7 +612,7 @@ function exportToCSV() {
         'मागील शाळेचे नाव',
         'अभ्यासातील प्रगती',
         'वर्तणूक',
-        'दाखला क्र.',
+        'दाखला बुक क्र.',
         'मागील शाळा सोडण्याचे कारण',
         'पत्ता',
         'फोन नंबर',
@@ -748,8 +761,8 @@ function generateCertificate(id) {
         <div class="certificate" style="padding: 20px; font-family: 'Noto Sans Devanagari', Arial, sans-serif; max-width: 100%; margin: 0 auto; box-sizing: border-box;">
             <div class="certificate-header">
                 <div style="display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 10px;">
-                    <img src="${baseUrl}images/logo.png" alt="School Logo" style="max-height: 90px; max-width: 90px;">
-                    <div style="text-align: center; flex: 1; margin: 0 15px;">
+                    <img class="lc-header-img" src="${baseUrl}images/logo.png" alt="School Logo" style="max-height: 90px; max-width: 90px; flex-shrink: 0;">
+                    <div style="text-align: center; flex: 1; margin: 0 15px; min-width: 0;">
                         <p style="color: #8B0000; font-size: 13px; margin: 2px 0; font-weight: 600;">
                             महात्मा गांधी विद्यामंदिर शिक्षण संस्था,
                         </p>
@@ -761,20 +774,20 @@ function generateCertificate(id) {
                         </p>
                         <div style="text-align: left; font-size: 12px; margin: 4px 0 0 0; border: 1px solid #8B0000;">
                             <div style="color: #8B0000; padding: 3px 6px; border-bottom: 1px solid #8B0000;">शाळा मान्यता क्रमांक -</div>
-                            <div style="color: #8B0000; padding: 3px 6px; border-bottom: 1px solid #8B0000; display: flex;"><span style="flex: 1;">फोन नं.-</span><span>ई-मेल - marathiadhya.sarav@gmail.com</span></div>
-                            <div style="color: #8B0000; padding: 3px 6px; border-bottom: 1px solid #8B0000; display: flex;"><span style="flex: 1;">● माध्यम - मराठी ● बोर्ड - नाशिक ● संलग्रता क्रमांक -</span><span style="width: 220px;">● यु. डायस क्र.- 27201700209</span></div>
-                            <div style="color: #000000; padding: 3px 6px; display: flex;"><span style="flex: 1;">दाखला क्र.- <strong>${student.dakhlaNo || ''}</strong></span><span style="width: 220px;">जनरल रजि.क्र.- <strong>${student.registrationNo || ''}</strong></span></div>
+                            <div class="lc-info-row" style="color: #8B0000; padding: 3px 6px; border-bottom: 1px solid #8B0000; display: flex;"><span style="flex: 1;">फोन नं.- 7066031120</span><span>ई-मेल - marathiadhya.sarav@gmail.com</span></div>
+                            <div class="lc-info-row" style="color: #8B0000; padding: 3px 6px; border-bottom: 1px solid #8B0000; display: flex;"><span style="flex: 1;">● माध्यम - मराठी ● बोर्ड - नाशिक ● संलग्रता क्रमांक -</span><span class="lc-info-fixed" style="width: 220px;">● यु. डायस क्र.- 27201700209</span></div>
+                            <div class="lc-info-row" style="color: #000000; padding: 3px 6px; display: flex;"><span style="flex: 1;">दाखला बुक क्र.- <strong>${student.dakhlaNo || ''}</strong></span><span class="lc-info-fixed" style="width: 220px;">जनरल रजि.क्र.- <strong>${student.registrationNo || ''}</strong></span></div>
                         </div>
                     </div>
-                    <img src="${baseUrl}images/Karmaveer bhausaheb hiray.jpg" alt="Founder" style="max-height: 90px; max-width: 90px; border-radius: 5px;">
+                    <img class="lc-header-img" src="${baseUrl}images/Karmaveer bhausaheb hiray.jpg" alt="Founder" style="max-height: 90px; max-width: 90px; border-radius: 5px; flex-shrink: 0;">
                 </div>
-                
+
                 <div style="text-align: center; margin: 15px 0; position: relative;">
                     <div style="border-top: 3px solid #000; position: absolute; width: 100%; top: 50%; z-index: 1;"></div>
                     <h2 style="background: white; display: inline-block; padding: 8px 30px; position: relative; z-index: 2; color: white; background-color: #8B0000; font-size: 26px; margin: 0; border-radius: 25px; font-weight: 700;">शाळा सोडल्याचा दाखला</h2>
                 </div>
             </div>
-            
+
             <div class="certificate-body" style="font-size: 13px; line-height: 1.6;">
                 <div style="border-top: 1px solid #000; border-left: 1px solid #000; border-right: 1px solid #000; margin: 10px 0; font-size: 12.5px;">
                     <div style="display: flex; border-bottom: 1px solid #000;">
@@ -1120,6 +1133,17 @@ async function printCertificate() {
                     clonedModalContent.style.width = 'auto';
                     clonedModalContent.style.maxWidth = 'none';
                 }
+                // The @media (max-width: 768px) mobile preview rules are keyed off the
+                // device's actual viewport width, not this element's forced width above,
+                // so on a real phone they'd still apply here and stack/shrink the PDF
+                // capture. Force the desktop layout for every field explicitly.
+                const forceDesktopLayout = clonedDoc.createElement('style');
+                forceDesktopLayout.textContent = `
+                    .lc-info-row { flex-direction: row !important; }
+                    .lc-info-fixed { width: 220px !important; }
+                    .lc-header-img { max-height: 90px !important; max-width: 90px !important; }
+                `;
+                clonedDoc.head.appendChild(forceDesktopLayout);
                 if (fontScale !== 1) {
                     const styleTag = clonedDoc.createElement('style');
                     styleTag.textContent = `

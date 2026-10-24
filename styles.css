@@ -498,6 +498,33 @@ h2 {
     box-shadow: 0 0 0 4px rgba(255, 154, 158, 0.15);
 }
 
+.sort-box {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.sort-box .sort-label {
+    font-weight: 600;
+    color: #555;
+    font-size: 0.95em;
+}
+
+.sort-box select {
+    padding: 10px 16px;
+    font-size: 0.95em;
+    font-family: 'Poppins', sans-serif;
+    border: 2px solid #E0E0E0;
+    border-radius: 20px;
+    background: white;
+    cursor: pointer;
+}
+
+.sort-box select:focus {
+    outline: none;
+    border-color: #FF9A9E;
+}
+
 .search-box .btn {
     align-self: flex-start;
     display: inline-flex;
@@ -784,26 +811,36 @@ h2 {
     box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
 }
 
-/* Scale certificate to fit mobile screen without scrolling */
+/* Mobile certificate preview: scroll to view instead of scaling/clipping */
 @media (max-width: 768px) {
     #certificateContent {
-        overflow: visible;
-        transform-origin: top left;
         width: 100%;
-        height: 100%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
         padding: 10px;
+        padding-top: 60px; /* clear the fixed close button */
         box-sizing: border-box;
     }
-    
+
     .certificate {
-        transform: scale(0.45);
-        transform-origin: top center;
         margin: 0;
-        width: 210%;
-        max-width: none;
+        width: 100%;
+        max-width: 100%;
+        padding: 15px;
+        font-size: 0.8em;
+    }
+
+    .lc-info-row {
+        flex-direction: column !important;
+        word-break: break-word;
+        overflow-wrap: break-word;
+    }
+
+    .lc-info-fixed {
+        width: auto !important;
+    }
+
+    .lc-header-img {
+        max-height: 55px !important;
+        max-width: 55px !important;
     }
 }
 
@@ -1908,7 +1945,7 @@ background: linear-gradient(135deg, #f8fafc, #e2e8f0, #c7d2fe);
         overflow-y: auto;
     }
     
-    /* Certificate modal - full width, no scroll, scaled to fit */
+    /* Certificate modal - full width, scrollable to view full certificate */
     #certificateModal .modal-content {
         padding: 0;
         width: 100%;
@@ -1916,18 +1953,12 @@ background: linear-gradient(135deg, #f8fafc, #e2e8f0, #c7d2fe);
         border-radius: 0;
         margin: 0;
         padding-bottom: 80px;
-        overflow: hidden;
+        overflow-y: auto;
         height: calc(100vh - 80px);
     }
-    
-    /* Remove horizontal scrolling for certificate on mobile */
+
     .modal-content #certificateContent {
         overflow: visible;
-    }
-    
-    #certificateContent {
-        padding: 0;
-        overflow: hidden;
     }
     
     .keyfeature-badge {
