@@ -4,6 +4,7 @@ import { database, ref, set, get, push, remove, update, child, auth, googleProvi
 // Authentication state
 let currentUser = null;
 let currentUserRole = null; // 'admin' or 'staff'
+let currentDocumentStudentId = null; // id of the student whose LC/Bonafide is open
 
 // Override native alert with beautiful custom toast
 window.alert = function (message) {
@@ -750,6 +751,7 @@ function generateCertificate(id) {
         alert('❌ Student not found!');
         return;
     }
+    currentDocumentStudentId = id;
 
     // Calculate age
     const age = calculateAge(student.dob);
@@ -795,7 +797,7 @@ function generateCertificate(id) {
                         <div style="flex: 1; padding: 4px 8px;">यु.आय.डी.नं. (आधार कार्ड क्रमांक) - <strong>${student.aadharNo || ''}</strong></div>
                     </div>
                     <div style="display: flex; border-bottom: 1px solid #000;">
-                        <div style="flex: 1; padding: 4px 8px;">१) विद्यार्थीचे संपूर्ण नाव - <strong>${student.studentName}</strong> <span style="margin-left: 40px;">(वडीलांचे नाव) <strong>${student.fatherName}</strong></span> <span style="margin-left: 40px;">(आडनाव) <strong>${student.lastName || ''}</strong></span></div>
+                        <div style="flex: 1; padding: 4px 8px;">१) विद्यार्थीचे संपूर्ण नाव - (विद्यार्थीचे नाव) <strong>${(student.studentName || '').trim().split(/\s+/)[0] || ''}</strong> <span style="margin-left: 40px;">(वडीलांचे नाव) <strong>${student.fatherName}</strong></span> <span style="margin-left: 40px;">(आडनाव) <strong>${student.lastName || ''}</strong></span></div>
                     </div>
                     <div style="display: flex; border-bottom: 1px solid #000;">
                         <div style="flex: 1; padding: 4px 8px;">२) आईचे नाव - <strong>${student.motherName}</strong></div>
@@ -859,7 +861,7 @@ function generateCertificate(id) {
                     <div style="margin-bottom: 50px;"></div>
                     <div style="font-weight: bold;">लिपीक/ता.क</div>
                 </div>
-                <div style="text-align: center;">
+                <div style="text-align: center; margin-right: 5%;">
                     <div style="margin-bottom: 50px;"></div>
                     <div style="font-weight: bold;">मुख्याध्यापक/प्राचार्य</div>
                 </div>
@@ -879,6 +881,7 @@ function generateBonafide(id) {
         alert('❌ Student not found!');
         return;
     }
+    currentDocumentStudentId = id;
 
     const baseUrl = window.location.origin + window.location.pathname.replace(/\/[^\/]*$/, '/');
     const bonafide = `
@@ -1041,6 +1044,14 @@ function calculateAge(dob) {
     return age;
 }
 
+// Build a download filename like "LC_StudentName_LastName.pdf"
+function buildDocumentFilename(prefix, student) {
+    const sanitize = (text) => (text || '').toString().trim().replace(/[\\/:*?"<>|]/g, '').replace(/\s+/g, '');
+    const firstName = (student?.studentName || '').trim().split(/\s+/)[0] || '';
+    const parts = [prefix, sanitize(firstName), sanitize(student?.lastName)].filter(Boolean);
+    return `${parts.join('_')}.pdf`;
+}
+
 // Format date to DD/MM/YYYY
 function formatDate(dateString) {
     const date = new Date(dateString);
@@ -1187,7 +1198,8 @@ async function printCertificate() {
         pdf.addImage(imgData, 'JPEG', xOffset, topMarginMm, imgWidthMm, imgHeightMm);
 
         // Trigger download
-        pdf.save('ShalaaSodlyachaDakhla.pdf');
+        const lcStudent = students.find(s => s.id === currentDocumentStudentId);
+        pdf.save(buildDocumentFilename('LC', lcStudent));
 
     } catch (err) {
         console.error('PDF generation error:', err);
@@ -1254,7 +1266,8 @@ async function printBonafide() {
             : 0;
 
         pdf.addImage(imgData, 'JPEG', 0, yOffset, pageWidth, imgHeightMm);
-        pdf.save('Bonafide_Certificate.pdf');
+        const bonafideStudent = students.find(s => s.id === currentDocumentStudentId);
+        pdf.save(buildDocumentFilename('Bonafide', bonafideStudent));
 
     } catch (err) {
         console.error('PDF generation error:', err);
