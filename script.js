@@ -1574,15 +1574,34 @@ window.unlockWithFingerprint = async function () {
         if (ok) {
             const lockScreen = document.getElementById('fingerprintLockScreen');
             if (lockScreen) lockScreen.style.display = 'none';
+
+            // The Firebase session was never actually ended (only hidden),
+            // so if it's already restored, reveal the dashboard again
+            if (currentUser) {
+                const userAuthDisplay = document.getElementById('userAuthDisplay');
+                const dashBtns = document.getElementById('dashboardButtons');
+                const loginBtns = document.getElementById('loginButtons');
+                if (userAuthDisplay) userAuthDisplay.style.display = 'flex';
+                if (dashBtns) dashBtns.style.display = 'block';
+                if (loginBtns) loginBtns.style.display = 'none';
+            }
             return;
         }
     }
     alert('❌ Fingerprint verification failed. Please try again or use Google Sign-In.');
 };
 
-window.skipFingerprintUnlock = function () {
+window.skipFingerprintUnlock = async function () {
     const lockScreen = document.getElementById('fingerprintLockScreen');
     if (lockScreen) lockScreen.style.display = 'none';
+
+    // Force a real sign-out so this can't be used to bypass the fingerprint
+    // check and reveal an already-restored session without verifying anyone
+    try {
+        await signOut(auth);
+    } catch (error) {
+        console.error('Sign out error while skipping fingerprint unlock:', error);
+    }
 };
 
 // Toggle button in the nav bar, shown once a user is signed in
@@ -1723,6 +1742,15 @@ window.signInWithGoogle = async function () {
 // Sign out user
 async function signOutUser() {
     try {
+        // If fingerprint quick-unlock is set up for this account on this
+        // device, treat "Sign Out" as a lock instead of a real sign-out, so
+        // next time it can be unlocked with fingerprint instead of Google.
+        const hasFingerprint = currentUser && getSavedFingerprintCredentials().some(c => c.email === currentUser.email);
+        if (hasFingerprint) {
+            lockWithFingerprint();
+            return;
+        }
+
         await signOut(auth);
         alert('✅ Signed out successfully!');
 
@@ -1732,6 +1760,21 @@ async function signOutUser() {
         console.error('Sign out error:', error);
         alert('❌ Error signing out. Please try again.');
     }
+}
+
+// Hide the dashboard and show the fingerprint lock screen WITHOUT ending the
+// underlying Firebase session, so "Unlock with Fingerprint" can restore it
+function lockWithFingerprint() {
+    const userAuthDisplay = document.getElementById('userAuthDisplay');
+    const dashBtns = document.getElementById('dashboardButtons');
+    const loginBtns = document.getElementById('loginButtons');
+    if (userAuthDisplay) userAuthDisplay.style.display = 'none';
+    if (dashBtns) dashBtns.style.display = 'none';
+    if (loginBtns) loginBtns.style.display = 'block';
+    showTab('home');
+
+    const lockScreen = document.getElementById('fingerprintLockScreen');
+    if (lockScreen) lockScreen.style.display = 'flex';
 }
 
 // Listen to authentication state changes
