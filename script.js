@@ -11,6 +11,13 @@ let currentDocumentStudentId = null; // id of the student whose LC/Bonafide is o
 let ADMIN_EMAILS = [];
 let STAFF_EMAILS = [];
 
+// Declared here (not down in the FINGERPRINT QUICK-UNLOCK section below) so
+// it's initialized before the early maybeShowFingerprintLockScreen() call
+// further down - that section's own getSavedFingerprintCredentials() reads
+// this const, and referencing a const before its declaration line runs
+// throws (temporal dead zone), which was previously happening silently.
+const FINGERPRINT_STORAGE_KEY = 'mavsps_fingerprint_credentials';
+
 async function refreshAuthorizedUsers() {
     try {
         const snapshot = await get(ref(database, 'authorizedUsers'));
@@ -35,6 +42,11 @@ async function refreshAuthorizedUsers() {
         STAFF_EMAILS = DEFAULT_STAFF_EMAILS;
     }
 }
+
+// This only reads localStorage (no network dependency), so run it
+// immediately - before the awaited fetch below - so the lock screen (if
+// applicable) appears instantly with no flash of unlocked content first
+maybeShowFingerprintLockScreen();
 
 // Must complete before any sign-in/role checks below run
 await refreshAuthorizedUsers();
@@ -1473,8 +1485,9 @@ let intendedRole = null;
 // with physical access to an already-signed-in browser still needs the
 // biometric to see it. It is cleared automatically if browser site data is
 // cleared, and can be disabled anytime from the nav bar or the lock screen.
-
-const FINGERPRINT_STORAGE_KEY = 'mavsps_fingerprint_credentials';
+// (FINGERPRINT_STORAGE_KEY itself is declared near the top of this file,
+// not here, since maybeShowFingerprintLockScreen() below is called before
+// this point in the file executes - see comment there for why.)
 
 function isWebAuthnSupported() {
     return !!(window.PublicKeyCredential && navigator.credentials);
@@ -1953,11 +1966,6 @@ onAuthStateChanged(auth, (user) => {
 });
 
 // ==================== END AUTHENTICATION FUNCTIONS ====================
-
-window.addEventListener('DOMContentLoaded', function () {
-    // Page elements ready
-    maybeShowFingerprintLockScreen();
-});
 
 // Expose functions to global scope for HTML onclick handlers
 window.showTab = showTab;
