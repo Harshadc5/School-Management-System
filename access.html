@@ -16,6 +16,18 @@
             padding: 0 20px;
         }
 
+        /* styles.css has a context-specific .btn-secondary meant for colored
+           backgrounds (white-on-white here); override it for this page */
+        .access-card .btn-secondary {
+            background: linear-gradient(135deg, #457B9D 0%, #1D3557 100%) !important;
+            color: white !important;
+            border: none !important;
+        }
+
+        .access-card .btn-secondary:hover {
+            background: linear-gradient(135deg, #5a92b5 0%, #2d4a6d 100%) !important;
+        }
+
         .access-card {
             background: white;
             border-radius: 16px;
