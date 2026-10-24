@@ -169,6 +169,60 @@
             text-align: left;
             font-size: 0.9em;
         }
+
+        @media (max-width: 600px) {
+            .access-wrap {
+                margin: 20px auto;
+                padding: 0 12px;
+            }
+
+            .access-card {
+                padding: 24px 18px;
+                border-radius: 12px;
+            }
+
+            .access-card h1 {
+                font-size: 1.3em;
+            }
+
+            .access-card p {
+                font-size: 0.9em;
+                margin-bottom: 18px;
+            }
+
+            .access-header {
+                justify-content: center;
+                text-align: center;
+            }
+
+            .access-header .signed-in-as {
+                width: 100%;
+                word-break: break-all;
+            }
+
+            .add-user-form {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 10px;
+            }
+
+            .add-user-form input[type="email"],
+            .add-user-form select,
+            .add-user-form button {
+                width: 100%;
+                min-width: 0;
+                box-sizing: border-box;
+            }
+
+            .user-row {
+                flex-wrap: wrap;
+                gap: 6px;
+            }
+
+            .user-row .btn-remove {
+                margin-left: auto;
+            }
+        }
     </style>
 </head>
 
