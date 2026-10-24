@@ -105,6 +105,11 @@
                     <span id="displayUserEmail" class="user-email"></span>
                 </div>
             </div>
+            <button class="sign-out-btn" id="fingerprintToggleBtn" onclick="toggleFingerprintUnlock()"
+                title="Toggle fingerprint quick-unlock on this device" style="display: none; margin-right: 8px;">
+                <i class="fas fa-fingerprint"></i>
+                <span id="fingerprintToggleLabel">Enable Fingerprint</span>
+            </button>
             <button class="sign-out-btn" onclick="signOutUser()" title="Sign Out">
                 <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.59L17 17l5-5-5-5z" fill="currentColor" />
@@ -799,6 +804,22 @@
                 </div>
             </div>
         </div>
+    </div>
+
+    <!-- Fingerprint Quick-Unlock Lock Screen -->
+    <div id="fingerprintLockScreen" style="display: none; position: fixed; inset: 0; z-index: 9999;
+        background: linear-gradient(135deg, #FFF5F5 0%, #FFF0F0 100%); align-items: center; justify-content: center; flex-direction: column; text-align: center; padding: 20px;">
+        <i class="fas fa-fingerprint" style="font-size: 70px; color: #FF6B6B; margin-bottom: 20px;"></i>
+        <h2 style="color: #2C3E50; margin-bottom: 10px;">Unlock to Continue</h2>
+        <p style="color: #666; margin-bottom: 25px;">This device is set up for fingerprint quick-unlock.</p>
+        <button class="btn btn-primary" onclick="unlockWithFingerprint()">
+            <i class="fas fa-fingerprint" style="margin-right: 8px;"></i> Unlock with Fingerprint
+        </button>
+        <button class="btn btn-secondary"
+            style="margin-top: 12px; background: linear-gradient(135deg, #457B9D 0%, #1D3557 100%); color: white; border: none;"
+            onclick="skipFingerprintUnlock()">
+            Use Google Sign-In Instead
+        </button>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>

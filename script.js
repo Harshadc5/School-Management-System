@@ -1463,6 +1463,159 @@ loadStudents();
 // Store the intended role to authenticate as
 let intendedRole = null;
 
+// ==================== FINGERPRINT QUICK-UNLOCK (WebAuthn) ====================
+// This is a LOCAL, device-bound convenience layer on top of Google sign-in.
+// It does NOT replace Firebase authentication or issue any new privileges -
+// Firebase's own persisted session (which already silently restores on page
+// load) remains the real source of truth for currentUser/currentUserRole.
+// The fingerprint/Face ID/Windows Hello prompt is only used to gate whether
+// the already-authenticated dashboard is shown on THIS device, so someone
+// with physical access to an already-signed-in browser still needs the
+// biometric to see it. It is cleared automatically if browser site data is
+// cleared, and can be disabled anytime from the nav bar or the lock screen.
+
+const FINGERPRINT_STORAGE_KEY = 'mavsps_fingerprint_credentials';
+
+function isWebAuthnSupported() {
+    return !!(window.PublicKeyCredential && navigator.credentials);
+}
+
+function getSavedFingerprintCredentials() {
+    try {
+        return JSON.parse(localStorage.getItem(FINGERPRINT_STORAGE_KEY) || '[]');
+    } catch {
+        return [];
+    }
+}
+
+function saveFingerprintCredential(email, credentialId, role) {
+    const list = getSavedFingerprintCredentials().filter(c => c.email !== email);
+    list.push({ email, credentialId, role });
+    localStorage.setItem(FINGERPRINT_STORAGE_KEY, JSON.stringify(list));
+}
+
+function removeFingerprintCredential(email) {
+    const list = getSavedFingerprintCredentials().filter(c => c.email !== email);
+    localStorage.setItem(FINGERPRINT_STORAGE_KEY, JSON.stringify(list));
+}
+
+function bufferToBase64(buffer) {
+    return btoa(String.fromCharCode(...new Uint8Array(buffer)));
+}
+
+function base64ToBuffer(base64) {
+    const binary = atob(base64);
+    const bytes = new Uint8Array(binary.length);
+    for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+    return bytes.buffer;
+}
+
+async function registerFingerprintForUser(email, role) {
+    if (!isWebAuthnSupported()) return false;
+    try {
+        const challenge = crypto.getRandomValues(new Uint8Array(32));
+        const credential = await navigator.credentials.create({
+            publicKey: {
+                challenge,
+                rp: { name: 'Mahatma Gandhi Vidyamandir SPS' },
+                user: {
+                    id: new TextEncoder().encode(email),
+                    name: email,
+                    displayName: email
+                },
+                pubKeyCredParams: [{ type: 'public-key', alg: -7 }, { type: 'public-key', alg: -257 }],
+                authenticatorSelection: { authenticatorAttachment: 'platform', userVerification: 'required' },
+                timeout: 60000
+            }
+        });
+        if (!credential) return false;
+        saveFingerprintCredential(email, bufferToBase64(credential.rawId), role);
+        return true;
+    } catch (error) {
+        console.error('Fingerprint registration failed:', error);
+        return false;
+    }
+}
+
+async function verifyFingerprintForSavedCredential(saved) {
+    try {
+        const challenge = crypto.getRandomValues(new Uint8Array(32));
+        const assertion = await navigator.credentials.get({
+            publicKey: {
+                challenge,
+                allowCredentials: [{ id: base64ToBuffer(saved.credentialId), type: 'public-key' }],
+                userVerification: 'required',
+                timeout: 60000
+            }
+        });
+        return !!assertion;
+    } catch (error) {
+        console.error('Fingerprint verification failed/cancelled:', error);
+        return false;
+    }
+}
+
+// Shown on page load if this device has a saved credential, before the
+// dashboard is revealed - regardless of whether Firebase already silently
+// restored the session in the background.
+function maybeShowFingerprintLockScreen() {
+    const lockScreen = document.getElementById('fingerprintLockScreen');
+    if (!lockScreen) return;
+    const saved = getSavedFingerprintCredentials();
+    if (saved.length > 0 && isWebAuthnSupported()) {
+        lockScreen.style.display = 'flex';
+    }
+}
+
+window.unlockWithFingerprint = async function () {
+    const saved = getSavedFingerprintCredentials();
+    for (const cred of saved) {
+        const ok = await verifyFingerprintForSavedCredential(cred);
+        if (ok) {
+            const lockScreen = document.getElementById('fingerprintLockScreen');
+            if (lockScreen) lockScreen.style.display = 'none';
+            return;
+        }
+    }
+    alert('❌ Fingerprint verification failed. Please try again or use Google Sign-In.');
+};
+
+window.skipFingerprintUnlock = function () {
+    const lockScreen = document.getElementById('fingerprintLockScreen');
+    if (lockScreen) lockScreen.style.display = 'none';
+};
+
+// Toggle button in the nav bar, shown once a user is signed in
+function updateFingerprintToggleButton() {
+    const btn = document.getElementById('fingerprintToggleBtn');
+    const label = document.getElementById('fingerprintToggleLabel');
+    if (!btn || !label || !currentUser) return;
+
+    if (!isWebAuthnSupported()) {
+        btn.style.display = 'none';
+        return;
+    }
+
+    btn.style.display = 'flex';
+    const isEnabled = getSavedFingerprintCredentials().some(c => c.email === currentUser.email);
+    label.textContent = isEnabled ? 'Disable Fingerprint' : 'Enable Fingerprint';
+}
+
+window.toggleFingerprintUnlock = async function () {
+    if (!currentUser) return;
+    const isEnabled = getSavedFingerprintCredentials().some(c => c.email === currentUser.email);
+
+    if (isEnabled) {
+        removeFingerprintCredential(currentUser.email);
+        showToast('Fingerprint unlock disabled on this device.', 'success');
+    } else {
+        const ok = await registerFingerprintForUser(currentUser.email, currentUserRole);
+        if (ok) showToast('✅ Fingerprint unlock enabled on this device!', 'success');
+        else showToast('❌ Could not enable fingerprint unlock on this device.', 'error');
+    }
+    updateFingerprintToggleButton();
+};
+
 // Open authentication modal
 window.openAuthModal = function (role) {
     intendedRole = role;
@@ -1514,6 +1667,20 @@ window.signInWithGoogle = async function () {
                 const dashBtns = document.getElementById('dashboardButtons');
                 if (loginBtns) loginBtns.style.display = 'none';
                 if (dashBtns) dashBtns.style.display = 'block';
+
+                // Offer fingerprint quick-unlock on this device, if supported
+                // and not already set up for this account
+                if (isWebAuthnSupported() && !getSavedFingerprintCredentials().some(c => c.email === user.email)) {
+                    setTimeout(async () => {
+                        const wantsFingerprint = confirm('Enable fingerprint/Face ID quick-unlock on this device for faster sign-in next time?');
+                        if (wantsFingerprint) {
+                            const ok = await registerFingerprintForUser(user.email, intendedRole);
+                            if (ok) showToast('✅ Fingerprint unlock enabled on this device!', 'success');
+                            else showToast('❌ Could not enable fingerprint unlock.', 'error');
+                            updateFingerprintToggleButton();
+                        }
+                    }, 1500);
+                }
             }, 1000);
         } else {
             // User is not authorized
@@ -1712,10 +1879,15 @@ onAuthStateChanged(auth, (user) => {
         if (typeof students !== 'undefined' && students.length > 0) {
             displayStudents();
         }
+
+        updateFingerprintToggleButton();
     } else {
         // User is signed out or not authorized
         currentUser = null;
         currentUserRole = null;
+
+        const fingerprintBtn = document.getElementById('fingerprintToggleBtn');
+        if (fingerprintBtn) fingerprintBtn.style.display = 'none';
 
         // Hide user info in navigation
         const userAuthDisplay = document.getElementById('userAuthDisplay');
@@ -1741,6 +1913,7 @@ onAuthStateChanged(auth, (user) => {
 
 window.addEventListener('DOMContentLoaded', function () {
     // Page elements ready
+    maybeShowFingerprintLockScreen();
 });
 
 // Expose functions to global scope for HTML onclick handlers
