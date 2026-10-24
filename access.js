@@ -49,7 +49,7 @@ async function loadAndRenderUsers() {
         if (list.length === 0) return '<div class="empty-list-note">None yet.</div>';
         return list.map(row => `
             <div class="user-row">
-                <span class="user-email">${escapeHtml(row.email)}</span>
+                <span class="access-user-email">${escapeHtml(row.email)}</span>
                 <button class="btn-remove" data-key="${row.key}"><i class="fas fa-trash"></i> Remove</button>
             </div>
         `).join('');
