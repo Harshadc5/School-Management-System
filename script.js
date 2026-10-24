@@ -114,6 +114,7 @@ admissionForm.addEventListener('submit', async function (e) {
         behaviour: formData.get('behaviour'),
         dakhlaNo: formData.get('dakhlaNo'),
         reasonForLeaving: formData.get('reasonForLeaving'),
+        dakhlaDate: formData.get('dakhlaDate'),
         address: formData.get('address'),
         phone: formData.get('phone'),
         email: formData.get('email'),
@@ -758,15 +759,11 @@ function generateCertificate(id) {
                         <p style="color: #8B0000; font-size: 12px; margin: 2px 0;">
                             भायगांव रोड, मालेगांव कॅम्प, ता. मालेगांव जि. नाशिक
                         </p>
-                        <p style="color: #8B0000; font-size: 10px; margin: 2px 0; text-align: left;">
-                            शाळा मान्यता क्रमांक -
-                        </p>
-                        <p style="color: #8B0000; font-size: 11px; margin: 3px 0; text-align: left; border-bottom: 2px solid #8B0000; padding-bottom: 3px;">
-                            फोन नं.- <span style="margin-left: 150px;">ई-मेल - marathiadhya.sarav@gmail.com</span>
-                        </p>
-                        <div style="text-align: left; font-size: 13px; margin: 2px 0; line-height: 1.4;">
-                            <div style="color: #8B0000;">● माध्यम - मराठी ● बोर्ड - नाशिक ● संलग्रता क्रमांक - <span style="margin-left: 140px;">● यु. डायस क्र.- 27201700209</span></div>
-                            <div style="color: #000000;">दाखला क्र.- <strong>${student.dakhlaNo || ''}</strong> <span style="margin-left: 330px;">जनरल रजि.क्र.- <strong>${student.registrationNo || ''}</strong></span></div>
+                        <div style="text-align: left; font-size: 12px; margin: 4px 0 0 0; border: 1px solid #8B0000;">
+                            <div style="color: #8B0000; padding: 3px 6px; border-bottom: 1px solid #8B0000;">शाळा मान्यता क्रमांक -</div>
+                            <div style="color: #8B0000; padding: 3px 6px; border-bottom: 1px solid #8B0000; display: flex;"><span style="flex: 1;">फोन नं.-</span><span>ई-मेल - marathiadhya.sarav@gmail.com</span></div>
+                            <div style="color: #8B0000; padding: 3px 6px; border-bottom: 1px solid #8B0000; display: flex;"><span style="flex: 1;">● माध्यम - मराठी ● बोर्ड - नाशिक ● संलग्रता क्रमांक -</span><span style="width: 220px;">● यु. डायस क्र.- 27201700209</span></div>
+                            <div style="color: #000000; padding: 3px 6px; display: flex;"><span style="flex: 1;">दाखला क्र.- <strong>${student.dakhlaNo || ''}</strong></span><span style="width: 220px;">जनरल रजि.क्र.- <strong>${student.registrationNo || ''}</strong></span></div>
                         </div>
                     </div>
                     <img src="${baseUrl}images/Karmaveer bhausaheb hiray.jpg" alt="Founder" style="max-height: 90px; max-width: 90px; border-radius: 5px;">
@@ -778,46 +775,74 @@ function generateCertificate(id) {
                 </div>
             </div>
             
-            <div class="certificate-body" style="font-size: 13px; line-height: 1.8;">
-                <p style="margin: 10px 0; border-bottom: 2px solid #000000; padding-bottom: 5px;">विद्यार्थी आयडी/पेन/आपार आयडी. - <strong>${student.studentPenId || ''}</strong> <span style="margin-left: 150px;">यु.आय.डी.नं. (आधार कार्ड क्रमांक) - <strong>${student.aadharNo}</strong></span></p>
-                
-                <p style="margin: 8px 0;">१) विद्यार्थीचे संपूर्ण नाव - <strong>${student.studentName}</strong> <span style="margin-left: 40px;">(वडीलांचे नाव) <strong>${student.fatherName}</strong></span> <span style="margin-left: 40px;">(आडनाव) <strong>${student.lastName || ''}</strong></span></p>
-                
-                <p style="margin: 8px 0;">२) आईचे नाव - <strong>${student.motherName}</strong></p>
-                
-                <p style="margin: 8px 0;">३) राष्ट्रीयत्व : भारतीय <span style="margin-left: 120px;">४) मातृभाषा : मराठी</span></p>
-                
-                <p style="margin: 8px 0;">५) धर्म : <strong>${student.religion}</strong> <span style="margin-left: 40px;">६) जात : <strong>${student.caste}</strong></span> <span style="margin-left: 40px;">७) पोटजात : <strong>${student.subCaste}</strong></span></p>
-                
-                <p style="margin: 8px 0;">८) जन्मस्थळ (गाव / शहर) : <strong>${student.birthPlace}</strong> <span style="margin-left: 40px;">तालुका : <strong>${student.birthTaluka}</strong></span> <span style="margin-left: 40px;">जिल्हा : <strong>${student.birthDistrict}</strong></span></p>
-                
-                <p style="margin: 8px 0;">९) राज्य : महाराष्ट्र <span style="margin-left: 120px;">१०) देश : भारत</span></p>
-                
-                <p style="margin: 8px 0;">११) जन्म दिनांक अंकी - <strong>${formatDate(student.dob)}</strong></p>
-                
-                <p style="margin: 8px 0;">१२) जन्म दिनांक अक्षरी - <strong>${formatDateInWords(student.dob)}</strong></p>
-                
-                <p style="margin: 8px 0;">१३) या पूर्वी शिकून आलेल्या शाळेचे नाव - <strong>${student.previousSchool || 'लागू नाही'}</strong></p>
-                
-                <p style="margin:8px 0;">१४) या शाळेत प्रवेश घेतल्याचा दिनांक - <strong>${formatDate(student.admissionDate)}</strong> <span style="margin-left: 60px;">१५) इयता - <strong>${student.class}</strong></span></p>
-                
-                <p style="margin: 8px 0;">१६) अभ्यासात प्रगती - <strong>${student.progressInStudy || ''}</strong> <span style="margin-left: 60px;">१७) वर्तणूक - <strong>${student.behaviour || ''}</strong></span></p>
-                
-                <p style="margin: 8px 0;">१८) शाळा सोडल्याचा दिनांक - <strong>${formatDate(new Date().toISOString().split('T')[0])}</strong></p>
-                
-                <p style="margin: 8px 0;">१९) कोणत्या इयतत शिकत होता व केव्हापासून  - <strong>${student.class}</strong></p>
-                
-                <p style="margin: 8px 0;">२०) शाळा सोडल्याचे कारण - <strong>पालकांच्या विनंतीनुसार</strong></p>
-                
-                <p style="margin: 8px 0;">२१) शेरा - <strong></strong></p>
-                
+            <div class="certificate-body" style="font-size: 13px; line-height: 1.6;">
+                <div style="border-top: 1px solid #000; border-left: 1px solid #000; border-right: 1px solid #000; margin: 10px 0; font-size: 12.5px;">
+                    <div style="display: flex; border-bottom: 1px solid #000;">
+                        <div style="flex: 1; padding: 4px 8px; border-right: 1px solid #000;">विद्यार्थी आयडी/पेन/आपार आयडी. - <strong>${student.studentPenId || ''}</strong></div>
+                        <div style="flex: 1; padding: 4px 8px;">यु.आय.डी.नं. (आधार कार्ड क्रमांक) - <strong>${student.aadharNo || ''}</strong></div>
+                    </div>
+                    <div style="display: flex; border-bottom: 1px solid #000;">
+                        <div style="flex: 1; padding: 4px 8px;">१) विद्यार्थीचे संपूर्ण नाव - <strong>${student.studentName}</strong> <span style="margin-left: 40px;">(वडीलांचे नाव) <strong>${student.fatherName}</strong></span> <span style="margin-left: 40px;">(आडनाव) <strong>${student.lastName || ''}</strong></span></div>
+                    </div>
+                    <div style="display: flex; border-bottom: 1px solid #000;">
+                        <div style="flex: 1; padding: 4px 8px;">२) आईचे नाव - <strong>${student.motherName}</strong></div>
+                    </div>
+                    <div style="display: flex; border-bottom: 1px solid #000;">
+                        <div style="flex: 1; padding: 4px 8px; border-right: 1px solid #000;">३) राष्ट्रीयत्व : भारतीय</div>
+                        <div style="flex: 1; padding: 4px 8px;">४) मातृभाषा : मराठी</div>
+                    </div>
+                    <div style="display: flex; border-bottom: 1px solid #000;">
+                        <div style="flex: 1; padding: 4px 8px; border-right: 1px solid #000;">५) धर्म : <strong>${student.religion}</strong></div>
+                        <div style="flex: 1; padding: 4px 8px; border-right: 1px solid #000;">६) जात : <strong>${student.caste}</strong></div>
+                        <div style="flex: 1; padding: 4px 8px;">७) पोटजात : <strong>${student.subCaste || ''}</strong></div>
+                    </div>
+                    <div style="display: flex; border-bottom: 1px solid #000;">
+                        <div style="flex: 1; padding: 4px 8px; border-right: 1px solid #000;">८) जन्मस्थळ (गाव / शहर) : <strong>${student.birthPlace}</strong></div>
+                        <div style="flex: 1; padding: 4px 8px; border-right: 1px solid #000;">तालुका : <strong>${student.birthTaluka}</strong></div>
+                        <div style="flex: 1; padding: 4px 8px;">जिल्हा : <strong>${student.birthDistrict}</strong></div>
+                    </div>
+                    <div style="display: flex; border-bottom: 1px solid #000;">
+                        <div style="flex: 1; padding: 4px 8px; border-right: 1px solid #000;">९) राज्य : महाराष्ट्र</div>
+                        <div style="flex: 1; padding: 4px 8px;">१०) देश : भारत</div>
+                    </div>
+                    <div style="display: flex; border-bottom: 1px solid #000;">
+                        <div style="flex: 1; padding: 4px 8px;">११) जन्म दिनांक अंकी - <strong>${formatDate(student.dob)}</strong></div>
+                    </div>
+                    <div style="display: flex; border-bottom: 1px solid #000;">
+                        <div style="flex: 1; padding: 4px 8px;">१२) जन्म दिनांक अक्षरी - <strong>${formatDateInWords(student.dob)}</strong></div>
+                    </div>
+                    <div style="display: flex; border-bottom: 1px solid #000;">
+                        <div style="flex: 1; padding: 4px 8px;">१३) या पूर्वी शिकून आलेल्या शाळेचे नाव - <strong>${student.previousSchool || ''}</strong></div>
+                    </div>
+                    <div style="display: flex; border-bottom: 1px solid #000;">
+                        <div style="flex: 2; padding: 4px 8px; border-right: 1px solid #000;">१४) या शाळेत प्रवेश घेतल्याचा दिनांक - <strong>${formatDate(student.admissionDate)}</strong></div>
+                        <div style="flex: 1; padding: 4px 8px;">१५) इयता - <strong>${student.class}</strong></div>
+                    </div>
+                    <div style="display: flex; border-bottom: 1px solid #000;">
+                        <div style="flex: 1; padding: 4px 8px; border-right: 1px solid #000;">१६) अभ्यासात प्रगती - <strong>${student.progressInStudy || ''}</strong></div>
+                        <div style="flex: 1; padding: 4px 8px;">१७) वर्तणूक - <strong>${student.behaviour || ''}</strong></div>
+                    </div>
+                    <div style="display: flex; border-bottom: 1px solid #000;">
+                        <div style="flex: 1; padding: 4px 8px;">१८) शाळा सोडल्याचा दिनांक - <strong>${formatDate(new Date().toISOString().split('T')[0])}</strong></div>
+                    </div>
+                    <div style="display: flex; border-bottom: 1px solid #000;">
+                        <div style="flex: 1; padding: 4px 8px;">१९) कोणत्या इयतत शिकत होता व केव्हापासून - <strong>${student.class}</strong></div>
+                    </div>
+                    <div style="display: flex; border-bottom: 1px solid #000;">
+                        <div style="flex: 1; padding: 4px 8px;">२०) शाळा सोडल्याचे कारण - <strong>${student.reasonForLeaving || ''}</strong></div>
+                    </div>
+                    <div style="display: flex; border-bottom: 1px solid #000;">
+                        <div style="flex: 1; padding: 4px 8px;">२१) शेरा - <strong></strong></div>
+                    </div>
+                </div>
+
                 <p style="margin: 20px 0 10px 0; font-size: 12px;">दाखला देण्यात येतो की, वरील माहिती शाळेतील जनरल रजिष्टर नं. १ प्रमाणे आहे.</p>
-                
-                <p style="margin: 5px 0; font-size: 11px;">दाखला देण्याची तारीख - <strong>${formatDate(new Date().toISOString().split('T')[0])}</strong></p>
+
+                <p style="margin: 5px 0; font-size: 11px;">दाखला देण्याची तारीख - <strong>${formatDate(student.dakhlaDate || new Date().toISOString().split('T')[0])}</strong></p>
             </div>
             
             <div class="certificate-footer" style="display: flex; justify-content: space-between; margin-top: 40px; border-top: 1px solid #000; padding-top: 20px;">
-                <div style="text-align: center;">
+                <div style="text-align: center; margin-left: 45%;">
                     <div style="margin-bottom: 50px;"></div>
                     <div style="font-weight: bold;">लिपीक/ता.क</div>
                 </div>
@@ -1039,24 +1064,6 @@ async function printCertificate() {
     }
 
     try {
-        // Capture the certificate element as a canvas image
-        const canvas = await html2canvas(certEl, {
-            scale: 2,           // 2x resolution for crisp text
-            useCORS: true,      // allow cross-origin images (logos)
-            allowTaint: false,
-            backgroundColor: '#FFFBF5',
-            logging: false,
-            imageTimeout: 5000,
-            onclone: function (clonedDoc) {
-                // Ensure the cloned certificate is fully visible
-                const clonedCert = clonedDoc.querySelector('.certificate');
-                if (clonedCert) {
-                    clonedCert.style.overflow = 'visible';
-                    clonedCert.style.maxWidth = 'none';
-                }
-            }
-        });
-
         // Create A4 PDF
         const { jsPDF } = window.jspdf;
         const pdf = new jsPDF({
@@ -1068,19 +1075,92 @@ async function printCertificate() {
         const pageWidth = pdf.internal.pageSize.getWidth();   // 210mm
         const pageHeight = pdf.internal.pageSize.getHeight();  // 297mm
 
-        // Scale the captured image to fill the full A4 page width
+        // Margins: more space on the left for hole-punching, 2cm top/bottom
+        const leftMarginMm = 25;  // 2.5cm
+        const rightMarginMm = 15; // 1.5cm
+        const topMarginMm = 20;   // 2cm
+        const bottomMarginMm = 20; // 2cm
+        const usableWidthMm = pageWidth - leftMarginMm - rightMarginMm;
+        const usableHeightMm = pageHeight - topMarginMm - bottomMarginMm;
+
+        // Capture the certificate element as a canvas image, optionally boosting
+        // font size so shorter records still fill the page between the margins
+        const captureCertificate = (fontScale) => html2canvas(certEl, {
+            scale: 2,           // 2x resolution for crisp text
+            useCORS: true,      // allow cross-origin images (logos)
+            allowTaint: false,
+            backgroundColor: '#FFFBF5',
+            logging: false,
+            imageTimeout: 5000,
+            onclone: function (clonedDoc) {
+                // Force a fixed, device-independent layout for capture so mobile's
+                // scaled-down/flex-centered display styles never affect the PDF
+                const clonedCert = clonedDoc.querySelector('.certificate');
+                if (clonedCert) {
+                    clonedCert.style.transform = 'none';
+                    clonedCert.style.overflow = 'visible';
+                    clonedCert.style.maxWidth = 'none';
+                    clonedCert.style.width = '800px';
+                    clonedCert.style.margin = '0';
+                }
+                const clonedContent = clonedDoc.querySelector('#certificateContent');
+                if (clonedContent) {
+                    clonedContent.style.display = 'block';
+                    clonedContent.style.overflow = 'visible';
+                    clonedContent.style.width = 'auto';
+                    clonedContent.style.height = 'auto';
+                    clonedContent.style.maxHeight = 'none';
+                    clonedContent.style.padding = '0';
+                    clonedContent.style.transform = 'none';
+                }
+                const clonedModalContent = clonedDoc.querySelector('#certificateModal .modal-content');
+                if (clonedModalContent) {
+                    clonedModalContent.style.overflow = 'visible';
+                    clonedModalContent.style.maxHeight = 'none';
+                    clonedModalContent.style.width = 'auto';
+                    clonedModalContent.style.maxWidth = 'none';
+                }
+                if (fontScale !== 1) {
+                    const styleTag = clonedDoc.createElement('style');
+                    styleTag.textContent = `
+                        .certificate-body { font-size: ${(1.05 * fontScale).toFixed(2)}em !important; line-height: ${(1.9 * fontScale).toFixed(2)} !important; }
+                        .certificate-body p { margin: ${(13 * fontScale).toFixed(1)}px 0 !important; }
+                        .certificate-header p { font-size: ${fontScale.toFixed(2)}em !important; }
+                        .certificate-footer { margin-top: ${(50 * fontScale).toFixed(1)}px !important; }
+                    `;
+                    clonedDoc.head.appendChild(styleTag);
+                }
+            }
+        });
+
+        // First pass: measure the certificate's natural height at normal font size
+        let canvas = await captureCertificate(1);
+        let ratio = usableWidthMm / canvas.width;
+        let imgHeightMm = canvas.height * ratio;
+
+        // Second pass: if it falls short of the usable page height, scale the
+        // font size up (not the image) so the content itself fills the space
+        if (imgHeightMm < usableHeightMm * 0.9) {
+            const fontScale = Math.min(1.35, usableHeightMm / imgHeightMm);
+            canvas = await captureCertificate(fontScale);
+            ratio = usableWidthMm / canvas.width;
+            imgHeightMm = canvas.height * ratio;
+        }
+
         const imgData = canvas.toDataURL('image/jpeg', 0.95);
-        const imgWidthPx = canvas.width;
-        const imgHeightPx = canvas.height;
-        const ratio = pageWidth / imgWidthPx;
-        const imgHeightMm = imgHeightPx * ratio;
 
-        // If certificate fits on one page, center it; otherwise let it fill
-        const yOffset = imgHeightMm < pageHeight
-            ? (pageHeight - imgHeightMm) / 2   // vertically centered
-            : 0;
+        // Safety: never let the content exceed the usable page height (would
+        // push the footer/signatures off the page) - shrink to fit if needed
+        let imgWidthMm = usableWidthMm;
+        let xOffset = leftMarginMm;
+        if (imgHeightMm > usableHeightMm) {
+            const shrink = usableHeightMm / imgHeightMm;
+            imgHeightMm = usableHeightMm;
+            imgWidthMm = usableWidthMm * shrink;
+            xOffset = leftMarginMm + (usableWidthMm - imgWidthMm) / 2;
+        }
 
-        pdf.addImage(imgData, 'JPEG', 0, yOffset, pageWidth, imgHeightMm);
+        pdf.addImage(imgData, 'JPEG', xOffset, topMarginMm, imgWidthMm, imgHeightMm);
 
         // Trigger download
         pdf.save('ShalaaSodlyachaDakhla.pdf');
@@ -1195,6 +1275,7 @@ function editStudent(id) {
     document.getElementById('editDob').value = student.dob;
     document.getElementById('editGender').value = student.gender;
     document.getElementById('editDakhlaNo').value = student.dakhlaNo || '';
+    document.getElementById('editDakhlaDate').value = student.dakhlaDate || '';
     document.getElementById('editBirthPlace').value = student.birthPlace;
     document.getElementById('editBirthTaluka').value = student.birthTaluka;
     document.getElementById('editBirthDistrict').value = student.birthDistrict;
@@ -1273,6 +1354,7 @@ editForm.addEventListener('submit', async function (e) {
         behaviour: formData.get('behaviour'),
         dakhlaNo: formData.get('dakhlaNo'),
         reasonForLeaving: formData.get('reasonForLeaving'),
+        dakhlaDate: formData.get('dakhlaDate'),
         address: formData.get('address'),
         phone: formData.get('phone'),
         email: formData.get('email'),

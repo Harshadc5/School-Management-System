@@ -1189,8 +1189,8 @@ background: linear-gradient(135deg, #f8fafc, #e2e8f0, #c7d2fe);
 
 @media print {
     @page {
-        size: letter portrait;
-        margin: 0.5in 0.5in 0.5in 0.5in;
+        size: a4 portrait;
+        margin: 0.5in 0 0.5in 0;
     }
 
     * {
@@ -1205,7 +1205,7 @@ background: linear-gradient(135deg, #f8fafc, #e2e8f0, #c7d2fe);
     }
 
     html, body {
-        width: 794px !important;
+        width: 100% !important;
         height: auto !important;
         margin: 0 !important;
         padding: 0 !important;
@@ -1257,9 +1257,8 @@ background: linear-gradient(135deg, #f8fafc, #e2e8f0, #c7d2fe);
     .certificate {
         border: 4px solid #FF9A9E !important;
         padding: 0.3in !important;
-        margin: 0 !important;
-        width: 100% !important;
-        max-width: 100% !important;
+        margin: 0 1.5cm 0 2.5cm !important;
+        max-width: calc(100% - 4cm) !important;
         box-sizing: border-box !important;
         background: linear-gradient(135deg, #FFFBF5 0%, #FFF9F0 100%) !important;
         page-break-after: avoid !important;
