@@ -149,6 +149,7 @@ admissionForm.addEventListener('submit', async function (e) {
         dakhlaNo: formData.get('dakhlaNo'),
         reasonForLeaving: formData.get('reasonForLeaving'),
         dakhlaDate: formData.get('dakhlaDate'),
+        remark: formData.get('remark'),
         address: formData.get('address'),
         phone: formData.get('phone'),
         email: formData.get('email'),
@@ -880,7 +881,7 @@ function generateCertificate(id) {
                         <div style="flex: 1; padding: 4px 8px;">२०) शाळा सोडल्याचे कारण - <strong>${student.reasonForLeaving || ''}</strong></div>
                     </div>
                     <div style="display: flex; border-bottom: 1px solid #000;">
-                        <div style="flex: 1; padding: 4px 8px;">२१) शेरा - <strong></strong></div>
+                        <div style="flex: 1; padding: 4px 8px;">२१) शेरा - <strong>${student.remark || ''}</strong></div>
                     </div>
                 </div>
 
@@ -1346,6 +1347,7 @@ function editStudent(id) {
     document.getElementById('editGender').value = student.gender;
     document.getElementById('editDakhlaNo').value = student.dakhlaNo || '';
     document.getElementById('editDakhlaDate').value = student.dakhlaDate || '';
+    document.getElementById('editRemark').value = student.remark || '';
     document.getElementById('editBirthPlace').value = student.birthPlace;
     document.getElementById('editBirthTaluka').value = student.birthTaluka;
     document.getElementById('editBirthDistrict').value = student.birthDistrict;
@@ -1425,6 +1427,7 @@ editForm.addEventListener('submit', async function (e) {
         dakhlaNo: formData.get('dakhlaNo'),
         reasonForLeaving: formData.get('reasonForLeaving'),
         dakhlaDate: formData.get('dakhlaDate'),
+        remark: formData.get('remark'),
         address: formData.get('address'),
         phone: formData.get('phone'),
         email: formData.get('email'),
