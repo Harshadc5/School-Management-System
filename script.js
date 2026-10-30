@@ -659,7 +659,7 @@ function exportToCSV() {
         'मागील शाळेचे नाव',
         'अभ्यासातील प्रगती',
         'वर्तणूक',
-        'दाखला बुक क्र.',
+        'दाखला क्र.',
         'मागील शाळा सोडण्याचे कारण',
         'पत्ता',
         'फोन नंबर',
@@ -811,20 +811,20 @@ function generateCertificate(id) {
                 <div style="display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 10px;">
                     <img class="lc-header-img" src="${baseUrl}images/logo.png" alt="School Logo" style="max-height: 90px; max-width: 90px; flex-shrink: 0;">
                     <div style="text-align: center; flex: 1; margin: 0 15px; min-width: 0;">
-                        <p style="color: #8B0000; font-size: 13px; margin: 2px 0; font-weight: 600;">
-                            महात्मा गांधी विद्यामंदिर शिक्षण संस्था,
+                        <p style="color: #8B0000; font-size: 14px; margin: 2px 0; font-weight: 600;">
+                            महात्मा गांधी विद्यामंदिर नाशिक संचालित,,
                         </p>
-                        <h1 style="color: #8B0000; font-size: 20px; margin: 3px 0; font-weight: 700;">
+                        <h1 style="color: #8B0000; font-size: 22px; margin: 3px 0; font-weight: 700;">
                             मराठी अध्यापक विद्यालय संलग्नित सरावपाठ शाळा
                         </h1>
-                        <p style="color: #8B0000; font-size: 12px; margin: 2px 0;">
+                        <p style="color: #8B0000; font-size: 13px; margin: 2px 0;">
                             भायगांव रोड, मालेगांव कॅम्प, ता. मालेगांव जि. नाशिक
                         </p>
-                        <div style="text-align: left; font-size: 12px; margin: 4px 0 0 0; border: 1px solid #8B0000;">
+                        <div style="text-align: left; font-size: 13px; margin: 4px 0 0 0; border: 1px solid #8B0000;">
                             <div style="color: #8B0000; padding: 3px 6px; border-bottom: 1px solid #8B0000;">शाळा मान्यता क्रमांक -</div>
                             <div class="lc-info-row" style="color: #8B0000; padding: 3px 6px; border-bottom: 1px solid #8B0000; display: flex;"><span style="flex: 1;">फोन नं.- 7066031120</span><span>ई-मेल - marathiadhya.sarav@gmail.com</span></div>
                             <div class="lc-info-row" style="color: #8B0000; padding: 3px 6px; border-bottom: 1px solid #8B0000; display: flex;"><span style="flex: 1;">● माध्यम - मराठी ● बोर्ड - नाशिक ● संलग्रता क्रमांक -</span><span class="lc-info-fixed" style="width: 220px;">● यु. डायस क्र.- 27201700209</span></div>
-                            <div class="lc-info-row" style="color: #000000; padding: 3px 6px; display: flex;"><span style="flex: 1;">दाखला बुक क्र.- <strong>${student.dakhlaNo || ''}</strong></span><span class="lc-info-fixed" style="width: 220px;">जनरल रजि.क्र.- <strong>${student.registrationNo || ''}</strong></span></div>
+                            <div class="lc-info-row" style="color: #000000; padding: 3px 6px; display: flex;"><span style="flex: 1;">दाखला क्र.- <strong>${student.dakhlaNo || ''}</strong></span><span class="lc-info-fixed" style="width: 150px; text-align: right; padding-right: 30px;">बुक क्र.- <strong>Online</strong></span><span class="lc-info-fixed" style="width: 180px;">जनरल रजि.क्र.- <strong>${student.registrationNo || ''}</strong></span></div>
                         </div>
                     </div>
                     <img class="lc-header-img" src="${baseUrl}images/Karmaveer bhausaheb hiray.jpg" alt="Founder" style="max-height: 90px; max-width: 90px; border-radius: 5px; flex-shrink: 0;">
@@ -836,8 +836,8 @@ function generateCertificate(id) {
                 </div>
             </div>
 
-            <div class="certificate-body" style="font-size: 13px; line-height: 1.6;">
-                <div style="border-top: 1px solid #000; border-left: 1px solid #000; border-right: 1px solid #000; margin: 10px 0; font-size: 12.5px;">
+            <div class="certificate-body" style="font-size: 14.5px; line-height: 1.6;">
+                <div style="border-top: 1px solid #000; border-left: 1px solid #000; border-right: 1px solid #000; margin: 10px 0; font-size: 16px;">
                     <div style="display: flex; border-bottom: 1px solid #000;">
                         <div style="flex: 1; padding: 4px 8px; border-right: 1px solid #000;">विद्यार्थी आयडी/पेन/आपार आयडी. - <strong>${student.studentPenId || ''}</strong></div>
                         <div style="flex: 1; padding: 4px 8px;">यु.आय.डी.नं. (आधार कार्ड क्रमांक) - <strong>${student.aadharNo || ''}</strong></div>
@@ -877,7 +877,7 @@ function generateCertificate(id) {
                     </div>
                     <div style="display: flex; border-bottom: 1px solid #000;">
                         <div style="flex: 2; padding: 4px 8px; border-right: 1px solid #000;">१४) या शाळेत प्रवेश घेतल्याचा दिनांक - <strong>${formatDate(student.admissionDate)}</strong></div>
-                        <div style="flex: 1; padding: 4px 8px;">१५) इयता - <strong>${student.class}</strong></div>
+                        <div style="flex: 1; padding: 4px 8px;">१५) इयत्ता - <strong>${student.class}</strong></div>
                     </div>
                     <div style="display: flex; border-bottom: 1px solid #000;">
                         <div style="flex: 1; padding: 4px 8px; border-right: 1px solid #000;">१६) अभ्यासात प्रगती - <strong>${student.progressInStudy || ''}</strong></div>
@@ -887,7 +887,7 @@ function generateCertificate(id) {
                         <div style="flex: 1; padding: 4px 8px;">१८) शाळा सोडल्याचा दिनांक - <strong>${formatDate(new Date().toISOString().split('T')[0])}</strong></div>
                     </div>
                     <div style="display: flex; border-bottom: 1px solid #000;">
-                        <div style="flex: 1; padding: 4px 8px;">१९) कोणत्या इयतत शिकत होता व केव्हापासून - <strong>${student.class}</strong></div>
+                        <div style="flex: 1; padding: 4px 8px;">१९) कोणत्या इयत्तेत शिकत होता व केव्हापासून - <strong>${student.class}</strong></div>
                     </div>
                     <div style="display: flex; border-bottom: 1px solid #000;">
                         <div style="flex: 1; padding: 4px 8px;">२०) शाळा सोडल्याचे कारण - <strong>${student.reasonForLeaving || ''}</strong></div>
@@ -897,9 +897,9 @@ function generateCertificate(id) {
                     </div>
                 </div>
 
-                <p style="margin: 20px 0 10px 0; font-size: 12px;">दाखला देण्यात येतो की, वरील माहिती शाळेतील जनरल रजिष्टर नं. १ प्रमाणे आहे.</p>
+                <p style="margin: 20px 0 10px 0; font-size: 15px;">दाखला देण्यात येतो की, वरील माहिती शाळेतील जनरल रजिष्टर नं. १ प्रमाणे आहे.</p>
 
-                <p style="margin: 5px 0; font-size: 11px;">दाखला देण्याची तारीख - <strong>${formatDate(student.dakhlaDate || new Date().toISOString().split('T')[0])}</strong></p>
+                <p style="margin: 5px 0; font-size: 14px;">दाखला देण्याची तारीख - <strong>${formatDate(student.dakhlaDate || new Date().toISOString().split('T')[0])}</strong></p>
             </div>
             
             <div class="certificate-footer" style="display: flex; justify-content: space-between; margin-top: 40px; border-top: 1px solid #000; padding-top: 20px;">
@@ -912,7 +912,7 @@ function generateCertificate(id) {
                     <div style="font-weight: bold;">मुख्याध्यापक/प्राचार्य</div>
                 </div>
             </div>
-            <p style="font-size: 10px; margin-top: 10px; text-align: center;">टिप :- १) शाळा सोडल्याचे दाखल्यामध्ये अनाधिकृतरित्या बदल केल्यास संबंधितांवर कायदेशिर कारवाई करण्यात येईल.</p>
+            <p style="font-size: 11px; margin-top: 10px; text-align: center;">टिप :- १) शाळा सोडल्याचे दाखल्यामध्ये अनाधिकृतरित्या बदल केल्यास संबंधितांवर कायदेशिर कारवाई करण्यात येईल.</p>
         </div>
     `;
 
@@ -938,7 +938,7 @@ function generateBonafide(id) {
                     <img src="${baseUrl}images/logo.png" alt="School Logo" style="max-height: 90px; max-width: 90px;">
                     <div style="text-align: center; flex: 1; margin: 0 15px;">
                         <p style="color: #8B0000; font-size: 15px; margin: 2px 0; font-weight: 600;">
-                            महात्मा गांधी विद्यामंदिर शिक्षण संस्था,
+                            महात्मा गांधी विद्यामंदिर नाशिक संचालित,,
                         </p>
                         <h1 style="color: #8B0000; font-size: 24px; margin: 5px 0; font-weight: 700;">
                             मराठी अध्यापक विद्यालय संलग्नित सरावपाठ शाळा
